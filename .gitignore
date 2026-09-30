@@ -1,0 +1,7 @@
+bin/
+build/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.atkq
+!tests/fixtures/*.atkq

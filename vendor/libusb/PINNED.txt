@@ -1,0 +1,17 @@
+libusb
+======
+
+  repository  https://github.com/libusb/libusb
+  tag         v1.0.29  (commit 15a7ebb4d426c5ce196684347d2b7cafad862626)
+  fetched     2026-09-30
+  licence     LGPL-2.1-or-later (COPYING)
+
+The same version ATK's get_hackrf.bat builds. Vendored: libusb/*.c and *.h,
+the Windows backend (os/*windows*), the two POSIX headers libusbi.h names,
+libusb-1.0.def, and msvc/config.h. build.bat compiles it into its OWN DLL,
+bin\libusb-1.0.dll, beside atkdaq.exe - kept dynamic so the LGPL's
+relinking terms are met by construction. On Linux the system libusb is
+used instead.
+
+The KrakenSDR's five RTL2832U interfaces need the WinUSB driver (Zadig) for
+libusb to open them; see README.md, "First run".

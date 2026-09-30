@@ -1,0 +1,30 @@
+librtlsdr - the krakenrf fork
+=============================
+
+  repository  https://github.com/krakenrf/librtlsdr
+  commit      08fb08165ecfcdd954c7a20cb1bbfbc159294f0e  (master, "bump cmake
+              version for cmake v4.x compatibility")
+  fetched     2026-09-30
+  licence     GPL-2.0-or-later (COPYING)
+
+Why this fork: it adds rtlsdr_set_dithering() (R820T PLL dithering off - the
+five tuners are never phase-coherent with it on) on top of the librtlsdr
+organisation's tree, which also carries rtlsdr_set_bias_tee_gpio() (the
+KrakenSDR's noise source is GPIO 0 of channel 0's RTL2832U; channel m's
+bias tee is GPIO m+1 of the same chip - Heimdall's usage) and
+rtlsdr_is_tuner_PLL_locked().
+
+What is vendored: include/*.h and src/librtlsdr.c + the tuner drivers,
+exactly as at that commit, plus ONE generated file, src/rtl_app_ver.h
+(upstream makes it from rtl_app_ver.h.in with CMake; the values are the
+0.8 in upstream's CMakeLists.txt). Nothing else is modified. The command
+line tools, the RPC client and the UDP control server are not built.
+
+Windows: librtlsdr.c includes <pthread.h>; vendor/win32/pthread.h supplies
+the calls it uses on Win32 primitives (see that file), so no pthreads
+library is needed.
+
+Updating: a new commit is a deliberate act - copy the same files from the
+new commit, regenerate rtl_app_ver.h if the version moved, rebuild, and run
+the whole suite (build.bat, then python -m pytest tests) before changing the
+commit above.

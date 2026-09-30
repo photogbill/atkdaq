@@ -1,0 +1,3 @@
+pocketfft (C version), Martin Reinecke / Max-Planck-Society, BSD-3-Clause
+(LICENSE.md). Copied from atkdsp's vendor/pocketfft, which is the same
+upstream file; used by src/sync.c, src/cal.c and the synthetic device.

@@ -1,0 +1,28 @@
+# ============================================================================
+#  Line endings, decided here rather than per machine (atkdsp's and ATK's
+#  rule, carried over). cmd.exe parses a .bat by byte offset as it runs it:
+#  it tolerates LF for plain sequential commands and NOT for `goto :label`
+#  or multi-line ( ... ) blocks, and build.bat is built from both. So every
+#  .bat is CRLF in the working tree on every machine, whatever core.autocrlf
+#  says. After committing this file once: git add --renormalize .
+# ============================================================================
+* text=auto
+
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.conf  text eol=crlf
+
+*.c     text eol=lf
+*.h     text eol=lf
+*.py    text eol=lf
+*.sh    text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+CMakeLists.txt text eol=lf
+
+*.atkq  binary
+*.dll   binary
+*.so    binary
+*.lib   binary
+*.exe   binary
+*.pdf   binary
