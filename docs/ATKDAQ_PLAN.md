@@ -607,3 +607,45 @@ these were fixed in `kraken.c`:
 
 The full test suite (C smoke 83, Python 30) and the MinGW+wine Windows build
 stayed green through the fixes.
+
+## 12. Asks from the cued-DF plan (ATK `docs/CUED_DF_PLAN.md`, 2026-10-02)
+
+The two-receiver configuration (the bladeRF triggers, the Kraken bears)
+needs four things from this program. None changes the wire format's
+meaning; one adds a value.
+
+1. **A calibration cache** keyed by `(fc as commanded, gain, dither_off)`
+   holding weights, slope, spread, passport id and `t_measured` — with a
+   correction made the same night (`CUED_DF_PLAN.md` §4.1): **this plan's
+   own §DF-H expects the PLL phase to be arbitrary on every relock**, in
+   which case the table can hold the slope and the gain imbalance (so a
+   post-retune cal measures only the five phases) but **not** the phase,
+   and `cal_state = cached` is never issued. Only if T1b shows the phase
+   repeats at the same frequency after a retune away and back does `tune`
+   apply a matching entry and stream at once (settle, no blind time), with
+   `tune <hz> fresh` forcing a cal. Build the table either way; gate the
+   phase-cache path behind T1b's result. A gain change invalidates entries
+   at the old gain only; a `cache` command lists entries. The baseline the
+   scheduler is designed around is the cal-only retune already built
+   (§11.6: ≈ 50 ms settle + 0.14 s).
+2. **`cal_state = cached`** in the frame header, with the entry's passport
+   id and age, so atkdf can put the provenance tier on every bearing. The
+   §11.6 rule stands: a cal whose fractional residual says the delays moved
+   is not applied and a sync runs — a cache hit never bypasses that check
+   when the next real cal happens.
+3. **T1b** — built as `bench/t1b_cache_validity.py` (drives the program
+   through stdin via `python/atkdaq/client.py`, one record per
+   calibration, verdict printed and saved): settle for small and
+   band-crossing hops; the DAQ's own retune cost; **PLL-phase
+   repeatability** at the same fc after a retune away and back (the
+   go/no-go above); a cached entry's spread versus distance from its key
+   (`f0 ± 100 kHz, ± 500 kHz, ± 1 MHz`); ageing (`--age-minutes`); the
+   gain-change case. Exercised on the synthetic device on both policy
+   branches. Still to add in `probe` itself: blind-time samples lost on a
+   planted burst. (`CUED_DF_PLAN.md` §13)
+4. **The lifecycle on the wire**: `off → streaming → synced → calibrated →
+   parked → computing` is the vocabulary the two views and the scheduler
+   use; the header already carries enough to name the state, and `status`
+   should say it in those words with the measured duration of the last
+   transition. (`CUED_DF_PLAN.md` §3)
+
